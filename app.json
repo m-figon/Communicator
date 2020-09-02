@@ -1,0 +1,12 @@
+{
+  "name": "communicator",
+  "displayName": "communicator",
+  "expo": {
+    "name": "communicator",
+    "slug": "communicator",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
