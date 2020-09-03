@@ -1,16 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, Button, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import bg from './bg.jpg';
 export default function HomeScreen({ navigation }) {
     return (
         <View style={styles.home}>
-            {/* <LinearGradient
-                colors={['gray', 'white']}
-                style={styles.homeGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-            > */}
             <ImageBackground source={bg} style={styles.homeGradient}>
                 <View style={styles.homeText}>
                     <Text style={styles.whiteText}>Welcome to Communcator App, swipe to navigate!</Text>
@@ -28,7 +21,6 @@ export default function HomeScreen({ navigation }) {
                     </View>
                 </View>
             </ImageBackground>
-            {/* </LinearGradient> */}
         </View>
     );
 }
