@@ -1,18 +1,14 @@
 import * as React from 'react';
-import { StyleSheet, Button, Text, View } from 'react-native';
-import {LinearGradient} from 'expo-linear-gradient';
+import { StyleSheet, Button, Text, View, ImageBackground } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import bg from './bg.jpg';
 
 export default function Login({ navigation }) {
     return (
         <View style={styles.home}>
-            <LinearGradient
-                colors={['gray', 'white']}
-                style={styles.homeGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-            >
+            <ImageBackground source={bg} style={styles.homeGradient}>
                 <Text style={styles.homeText}>Login</Text>
-            </LinearGradient>
+            </ImageBackground>
         </View>
     );
 }
@@ -24,7 +20,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    homeGradient:{
+    homeGradient: {
         width: '100%',
         height: '100%',
         display: 'flex',

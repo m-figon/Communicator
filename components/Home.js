@@ -1,20 +1,17 @@
 import * as React from 'react';
-import { StyleSheet, Button, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Button, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import bg from './bg.jpg';
 export default function HomeScreen({ navigation }) {
     return (
         <View style={styles.home}>
-            {/* <Button
-        onPress={() => navigation.navigate('Notifications')}
-        title="Go to notifications"
-      /> */}
-            <LinearGradient
+            {/* <LinearGradient
                 colors={['gray', 'white']}
                 style={styles.homeGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-            >
+            > */}
+            <ImageBackground source={bg} style={styles.homeGradient}>
                 <View style={styles.homeText}>
                     <Text style={styles.whiteText}>Welcome to Communcator App, swipe to navigate!</Text>
                     <View style={styles.line}>
@@ -30,7 +27,8 @@ export default function HomeScreen({ navigation }) {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </LinearGradient>
+            </ImageBackground>
+            {/* </LinearGradient> */}
         </View>
     );
 }
@@ -50,7 +48,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     homeText: {
-        width: 300,
+        width: 340,
         backgroundColor: 'rgba(0,0,0,0.5)',
         color: 'white',
         borderWidth: 0,
@@ -62,7 +60,7 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     blueText: {
-        color: 'blue',
+        color: '#82b8ff',
         marginHorizontal: 10
     },
     line: {
