@@ -9,15 +9,36 @@ import Register from './components/Register';
 
 const Drawer = createDrawerNavigator();
 
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Home" component={Home} />
-        <Drawer.Screen name="Friends" component={Friends} />
-        <Drawer.Screen name="Login" component={Login} />
-        <Drawer.Screen name="Register" component={Register} />
-      </Drawer.Navigator>
-    </NavigationContainer>
-  );
+export default class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      logedAc: null
+    }
+    this.changeAc = this.changeAc.bind(this);
+  }
+  changeAc(value) {
+    this.setState({
+      logedAc: value
+    })
+  }
+  render() {
+    return (
+      <NavigationContainer>
+        <Drawer.Navigator initialRouteName="Home">
+          <Drawer.Screen name="Home" component={Home} />
+          <Drawer.Screen
+            name="Friends">
+            {navigation => <Friends navigation={navigation} changeAc={this.changeAc} logedAc={this.state.logedAc} />}
+          </Drawer.Screen>
+          <Drawer.Screen
+            name="Login">
+            {navigation => <Login navigation={navigation} changeAc={this.changeAc} logedAc={this.state.logedAc} />}
+          </Drawer.Screen>
+          <Drawer.Screen name="Register" component={Register} />
+        </Drawer.Navigator>
+      </NavigationContainer>
+    );
+  }
+
 }

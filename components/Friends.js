@@ -7,37 +7,24 @@ export default class Friends extends React.Component {
     constructor() {
         super();
         this.state = {
-            logedAc: "SlickJoe",
             user: null
         }
     }
-    componentDidMount() {
-        fetch('https://rocky-citadel-32862.herokuapp.com/Communicator/users')
-            .then((response) => response.json())
-            .then((responseJson) => {
-                let tmpUsers = responseJson;
-                for (let item of tmpUsers) {
-                    if (item.account === this.state.logedAc) {
-                        this.setState({
-                            user: item
-                        }, () => {
-                            console.log(this.state.user);
-                        })
-                    }
-                }
-            })
-    }
+
     render() {
-        if (this.state.user) {
+        if (this.props.logedAc) {
             return (
 
                 <View style={styles.friends}>
 
                     <ImageBackground source={bg} style={styles.friendsGradient}>
                         <View style={styles.friendsContent}>
+                            <View style={styles.line}>
+                            <Image style={styles.bigImage} source={{ uri: this.props.logedAc.img }}></Image>
+                            <Text style={styles.bigText}>{this.props.logedAc.account} friends list</Text>
 
-                            <Text style={styles.bigText}>{this.state.logedAc} friends list</Text>
-                            {this.state.user.friends.map((item) => {
+                            </View>
+                            {this.props.logedAc.friends.map((item) => {
                                 if (item.messages.length === 0) {
                                     return (
                                         <View style={styles.friendsLine}>
@@ -157,5 +144,19 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         borderRadius: 10,
         borderWidth: 1
+    },
+    line: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 10
+    },
+    bigImage: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        marginRight: 10,
+        borderWidth: 2,
+        borderColor: '#82b8ff',
     }
 });

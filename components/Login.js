@@ -36,8 +36,9 @@ export default class Login extends Component {
             for (let item of this.state.users) {
                 if (this.state.account === item.account && this.state.password === item.password) {
                     correctFlag = true;
-                    this.props.changeAc(this.state.account);
-                    this.props.navigation.navigation.push('Home');
+                    this.props.changeAc(item);
+                    console.log(this.props.navigation);
+                    this.props.navigation.navigation.jumpTo('Home');
                     Alert.alert('You loged', 'Correct user data', [
                         { text: 'Understood', onPress: () => console.log('alert closed') }
                     ])

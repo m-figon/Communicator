@@ -18,6 +18,7 @@ export default class Register extends Component {
             accountShow: false,
             passwordShow: false,
             password2Show: false,
+            avatar: null
         }
     }
     settingState = (type, value) => {
@@ -31,11 +32,6 @@ export default class Register extends Component {
         })
     }
     registerFunc = () => {
-        console.log(this.state.email);
-        console.log(this.state.email);
-        console.log(this.state.email);
-        console.log(this.state.email);
-
         let registerFlag = true;
         if (
             !(this.state.email.match(/^[a-z0-9\._\-]+@[a-z0-9\.\-]+\.[a-z]{2,4}$/) ===
@@ -113,8 +109,11 @@ export default class Register extends Component {
 
         }
     }
-    selectImg(e){
-        console.log(e);
+    selectImg(url, num){
+        this.setState({
+            img: url,
+            avatar: num
+        })
     }
     render() {
         return (
@@ -151,14 +150,26 @@ export default class Register extends Component {
                             { display: 'flex' }
                             : { display: 'none' }]} >Password must be correct and same as password confirmation</Text>
                     <View style={styles.line}>
-                        <TouchableOpacity onPress={(e)=>this.selectImg(e)}>
-                        <Image style={styles.avatarImg} source={{ uri: 'https://robohash.org/77set=set6' }}></Image>
+                        <TouchableOpacity onPress={()=>this.selectImg('https://robohash.org/77set=set6',1)}>
+                        <Image style={[
+                        styles.avatarImg,
+                        this.state.avatar===1 ?
+                            { borderWidth: 2 }
+                            : { borderWidth: 0 }]} source={{ uri: 'https://robohash.org/77set=set6' }}></Image>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={(e)=>this.selectImg(e)}>
-                        <Image style={styles.avatarImg} source={{ uri: 'https://robohash.org/77set=set10' }}></Image>
+                        <TouchableOpacity onPress={(e)=>this.selectImg('https://robohash.org/77set=set6',2)}>
+                        <Image style={[
+                        styles.avatarImg,
+                        this.state.avatar===2 ?
+                            { borderWidth: 2 }
+                            : { borderWidth: 0 }]} source={{ uri: 'https://robohash.org/77set=set10' }}></Image>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={(e)=>this.selectImg(e)}>
-                        <Image style={styles.avatarImg} source={{ uri: 'https://robohash.org/77set=set20' }}></Image>
+                        <TouchableOpacity onPress={(e)=>this.selectImg('https://robohash.org/77set=set6',3)}>
+                        <Image style={[
+                        styles.avatarImg,
+                        this.state.avatar===3 ?
+                            { borderWidth: 2 }
+                            : { borderWidth: 0 }]} source={{ uri: 'https://robohash.org/77set=set20' }}></Image>
                         </TouchableOpacity>
                     </View>
                     <Button onPress={() => this.registerFunc()} title="Register" color="#82b8ff"></Button>
@@ -207,7 +218,9 @@ const styles = StyleSheet.create({
     },
     avatarImg: {
         height: 50,
-        width: 50
+        width: 50,
+        borderRadius: 30,
+        borderColor: 'green'
     },
     titleText: {
         fontSize: 15,
