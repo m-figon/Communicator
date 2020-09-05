@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, Button, Text, View, Image, ImageBackground, TextInput } from 'react-native';
+import { StyleSheet, Button, Text, View, Image, ImageBackground, TextInput, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import bg from './bg.jpg';
-
+import moment from 'moment';
 export default class Details extends React.Component {
     constructor() {
         super();
@@ -27,9 +27,9 @@ export default class Details extends React.Component {
         tmpFriends[this.state.user.id].messages.push({
             account: this.props.logedAc.account,
             content: this.state.message,
-            date: "01/02/2020"
+            date: moment().format('L')
         })
-        let newObj ={
+        let newObj = {
             email: this.props.logedAc.email,
             account: this.props.logedAc.account,
             password: this.props.logedAc.password,
@@ -43,47 +43,51 @@ export default class Details extends React.Component {
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
             },
-        }, () => {
-            this.props.changeAc(newObj);
-            alert('message sent!');
+        }).then(()=>{
+                this.props.changeAc(newObj);
+                this.setState({
+                    message: ""
+                },()=>{
+                    alert('message sent!');
+                })
         })
 
     }
     render() {
         if (this.props.logedAc && this.state.user) {
             return (
-
                 <View style={styles.friends}>
+                    <ScrollView>
+                        <ImageBackground source={bg} style={styles.friendsGradient}>
+                            <View style={styles.friendsContent}>
+                                <View style={styles.line}>
+                                    <Image style={styles.bigImage} source={{ uri: this.state.user.img }}></Image>
+                                    <Text style={styles.bigText}>{this.state.user.account}</Text>
 
-                    <ImageBackground source={bg} style={styles.friendsGradient}>
-                        <View style={styles.friendsContent}>
-                            <View style={styles.line}>
-                                <Image style={styles.bigImage} source={{ uri: this.state.user.img }}></Image>
-                                <Text style={styles.bigText}>{this.state.user.account}</Text>
-
-                            </View>
-                            {this.state.user.messages.map((item) => {
-                                return (
-                                    <View>
-                                        <Text style={styles.smallText}>{item.date}</Text>
-                                        <View style={styles.friendsLine}>
-                                            <View style={styles.left}>
-                                                <Text style={styles.smallText}>{item.account}</Text>
-                                            </View>
-                                            <View style={styles.right}>
-                                                <Text style={styles.smallText2}>{item.content}</Text>
+                                </View>
+                                {this.state.user.messages.map((item) => {
+                                    return (
+                                        <View>
+                                            <Text style={styles.smallText}>{item.date}</Text>
+                                            <View style={styles.friendsLine}>
+                                                <View style={styles.left}>
+                                                    <Text style={styles.smallText}>{item.account}</Text>
+                                                </View>
+                                                <View style={styles.right}>
+                                                    <Text style={styles.smallText2}>{item.content}</Text>
+                                                </View>
                                             </View>
                                         </View>
-                                    </View>
-                                )
-                            })}
-                            <View style={styles.line}>
-                                <TextInput placeholder="New message" style={styles.inputContent} value={this.state.message} onChangeText={(value) => { this.changeInput(value) }} />
-                                <Button onPress={() => this.send()} title="Send" color="#82b8ff"></Button>
+                                    )
+                                })}
+                                <View style={styles.line}>
+                                    <TextInput placeholder="New message" style={styles.inputContent} value={this.state.message} onChangeText={(value) => { this.changeInput(value) }} />
+                                    <Button onPress={() => this.send()} title="Send" color="#82b8ff"></Button>
+                                </View>
                             </View>
-                        </View>
 
-                    </ImageBackground>
+                        </ImageBackground>
+                    </ScrollView>
                 </View>
             );
         } else {
