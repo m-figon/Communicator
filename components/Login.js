@@ -28,16 +28,16 @@ export default class Login extends Component {
         })
     }
     loginFunc = () => {
-        console.log(this.state.users);
-        console.log(this.state.account);
-        console.log(this.state.password);
+       // console.log(this.state.users);
+        //console.log(this.state.account);
+        //console.log(this.state.password);
         if (this.state.users) {
             let correctFlag = false;
             for (let item of this.state.users) {
                 if (this.state.account === item.account && this.state.password === item.password) {
                     correctFlag = true;
                     this.props.changeAc(item);
-                    console.log(this.props.navigation);
+                    //console.log(this.props.navigation);
                     this.props.navigation.navigation.jumpTo('Home');
                     Alert.alert('You loged', 'Correct user data', [
                         { text: 'Understood', onPress: () => console.log('alert closed') }

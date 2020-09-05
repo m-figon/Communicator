@@ -1,18 +1,56 @@
 import * as React from 'react';
-import { StyleSheet, Button, Text, View, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, Button, Text, View, Image, ImageBackground, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import bg from './bg.jpg';
 
-export default class Friends extends React.Component {
+export default class Details extends React.Component {
     constructor() {
         super();
         this.state = {
-            user: null
+            user: null,
+            message: ""
         }
     }
+    componentDidMount() {
+        //console.log(this.props.navigation.route.params.name);
+        this.setState({
+            user: this.props.navigation.route.params.name
+        })
+    }
+    changeInput(value) {
+        this.setState({
+            message: value
+        })
+    }
+    send() {
+        let tmpFriends = this.props.logedAc.friends;
+        tmpFriends[this.state.user.id].messages.push({
+            account: this.props.logedAc.account,
+            content: this.state.message,
+            date: "01/02/2020"
+        })
+        let newObj ={
+            email: this.props.logedAc.email,
+            account: this.props.logedAc.account,
+            password: this.props.logedAc.password,
+            img: this.props.logedAc.img,
+            friends: tmpFriends,
+            id: this.props.logedAc.id
+        }
+        fetch("https://rocky-citadel-32862.herokuapp.com/Communicator/users/" + this.props.logedAc.id, {
+            method: "PUT",
+            body: JSON.stringify(newObj),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+            },
+        }, () => {
+            this.props.changeAc(newObj);
+            alert('message sent!');
+        })
 
+    }
     render() {
-        if (this.props.logedAc) {
+        if (this.props.logedAc && this.state.user) {
             return (
 
                 <View style={styles.friends}>
@@ -20,43 +58,29 @@ export default class Friends extends React.Component {
                     <ImageBackground source={bg} style={styles.friendsGradient}>
                         <View style={styles.friendsContent}>
                             <View style={styles.line}>
-                            <Image style={styles.bigImage} source={{ uri: this.props.logedAc.img }}></Image>
-                            <Text style={styles.bigText}>{this.props.logedAc.account} friends list</Text>
+                                <Image style={styles.bigImage} source={{ uri: this.state.user.img }}></Image>
+                                <Text style={styles.bigText}>{this.state.user.account}</Text>
 
                             </View>
-                            {this.props.logedAc.friends.map((item) => {
-                                if (item.messages.length === 0) {
-                                    return (
-                                        <TouchableOpacity onPress={()=>this.props.navigation.navigation.jumpTo('Details',{name: item})}>
-                                             <View style={styles.friendsLine}>
-                                            <View style={styles.left}>
-                                                <Image style={styles.smallImage} source={{ uri: item.img }}></Image>
-                                                
-                                                <Text style={styles.smallText}>{item.account}</Text>
-                                            </View>
-                                            <View style={styles.right}>
-                                                <Text style={styles.smallText2}>No Messages</Text>
-                                            </View>
-                                        </View>        
-                                        </TouchableOpacity>
-                                    )
-                                } else {
-                                    return (
-                                        <TouchableOpacity onPress={()=>this.props.navigation.navigation.jumpTo('Details',{name: item})}>
+                            {this.state.user.messages.map((item) => {
+                                return (
+                                    <View>
+                                        <Text style={styles.smallText}>{item.date}</Text>
                                         <View style={styles.friendsLine}>
                                             <View style={styles.left}>
-                                                <Image style={styles.smallImage} source={{ uri: item.img }}></Image>
                                                 <Text style={styles.smallText}>{item.account}</Text>
                                             </View>
                                             <View style={styles.right}>
-                                                <Text style={styles.smallText2}>Last message 13:30</Text>
+                                                <Text style={styles.smallText2}>{item.content}</Text>
                                             </View>
                                         </View>
-                                        </TouchableOpacity>
-                                    )
-                                }
-
+                                    </View>
+                                )
                             })}
+                            <View style={styles.line}>
+                                <TextInput placeholder="New message" style={styles.inputContent} value={this.state.message} onChangeText={(value) => { this.changeInput(value) }} />
+                                <Button onPress={() => this.send()} title="Send" color="#82b8ff"></Button>
+                            </View>
                         </View>
 
                     </ImageBackground>
@@ -112,10 +136,11 @@ const styles = StyleSheet.create({
     },
     smallText: {
         fontSize: 15,
-        color: 'white'
+        color: 'white',
+        paddingLeft: 15
     },
     left: {
-        width: '50%',
+        width: '40%',
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
@@ -123,12 +148,12 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start'
     },
     right: {
-        width: '50%',
+        width: '60%',
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-start'
     },
     smallText2: {
         fontSize: 15,
@@ -154,7 +179,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 10
+        marginVertical: 20
     },
     bigImage: {
         width: 60,
@@ -163,5 +188,12 @@ const styles = StyleSheet.create({
         marginRight: 10,
         borderWidth: 2,
         borderColor: '#82b8ff',
-    }
+    },
+    inputContent: {
+        width: '80%',
+        marginRight: 10,
+        color: 'white',
+        borderBottomWidth: 1,
+        borderBottomColor: '#82b8ff'
+    },
 });

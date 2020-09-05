@@ -6,6 +6,7 @@ import Home from './components/Home';
 import Friends from './components/Friends';
 import Login from './components/Login';
 import Register from './components/Register';
+import Details from './components/Details';
 
 const Drawer = createDrawerNavigator();
 
@@ -28,6 +29,10 @@ export default class App extends React.Component {
         <Drawer.Navigator initialRouteName="Home">
           <Drawer.Screen name="Home" component={Home} />
           <Drawer.Screen
+            name="Details">
+            {(navigation) => <Details navigation={navigation} changeAc={this.changeAc} logedAc={this.state.logedAc} />}
+          </Drawer.Screen>  
+              <Drawer.Screen
             name="Friends">
             {navigation => <Friends navigation={navigation} changeAc={this.changeAc} logedAc={this.state.logedAc} />}
           </Drawer.Screen>
