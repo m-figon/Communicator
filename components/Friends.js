@@ -10,7 +10,6 @@ export default class Friends extends React.Component {
             user: null
         }
     }
-
     render() {
         if (this.props.logedAc) {
             return (
@@ -27,7 +26,7 @@ export default class Friends extends React.Component {
                             {this.props.logedAc.friends.map((item) => {
                                 if (item.messages.length === 0) {
                                     return (
-                                        <TouchableOpacity onPress={()=>this.props.navigation.navigation.jumpTo('Details',{name: item})}>
+                                        <TouchableOpacity onPress={()=>this.props.navigation.navigation.push('Details',{name: item})}>
                                              <View style={styles.friendsLine}>
                                             <View style={styles.left}>
                                                 <Image style={styles.smallImage} source={{ uri: item.img }}></Image>
@@ -42,14 +41,14 @@ export default class Friends extends React.Component {
                                     )
                                 } else {
                                     return (
-                                        <TouchableOpacity onPress={()=>this.props.navigation.navigation.jumpTo('Details',{name: item})}>
+                                        <TouchableOpacity onPress={()=>this.props.navigation.navigation.push('Details',{name: item})}>
                                         <View style={styles.friendsLine}>
                                             <View style={styles.left}>
                                                 <Image style={styles.smallImage} source={{ uri: item.img }}></Image>
                                                 <Text style={styles.smallText}>{item.account}</Text>
                                             </View>
                                             <View style={styles.right}>
-                                                <Text style={styles.smallText2}>Last message 13:30</Text>
+                                                <Text style={styles.smallText2}>Last message {item.messages[item.messages.length-1].date}</Text>
                                             </View>
                                         </View>
                                         </TouchableOpacity>

@@ -11,8 +11,10 @@ const Stack = createStackNavigator();
 export default class App extends React.Component {
   render() {
     return (
-      <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator
+        screenOptions={{
+          headerShown: false
+        }}>
         <Stack.Screen
             name="Friends">
             {navigation => <Friends navigation={navigation} changeAc={this.props.changeAc} logedAc={this.props.logedAc} />}
@@ -22,7 +24,6 @@ export default class App extends React.Component {
             {navigation => <Details navigation={navigation} changeAc={this.props.changeAc} logedAc={this.props.logedAc} />}
           </Stack.Screen>
         </Stack.Navigator>
-      </NavigationContainer>
     );
   }
 }

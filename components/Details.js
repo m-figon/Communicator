@@ -12,10 +12,20 @@ export default class Details extends React.Component {
         }
     }
     componentDidMount() {
-        //console.log(this.props.navigation.route.params.name);
+        let previousUser;
+        let currentUser = this.props.navigation.route.params.name;
         this.setState({
             user: this.props.navigation.route.params.name
         })
+        setInterval(()=>{
+            previousUser = currentUser;
+            currentUser = this.props.navigation.route.params.name;
+            if(previousUser!==currentUser){
+                this.setState({
+                    user: this.props.navigation.route.params.name
+                })
+            }
+        },100)
     }
     changeInput(value) {
         this.setState({
@@ -43,13 +53,13 @@ export default class Details extends React.Component {
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
             },
-        }).then(()=>{
-                this.props.changeAc(newObj);
-                this.setState({
-                    message: ""
-                },()=>{
-                    alert('message sent!');
-                })
+        }).then(() => {
+            this.props.changeAc(newObj);
+            this.setState({
+                message: ""
+            }, () => {
+                alert('message sent!');
+            })
         })
 
     }
@@ -57,9 +67,9 @@ export default class Details extends React.Component {
         if (this.props.logedAc && this.state.user) {
             return (
                 <View style={styles.friends}>
-                    <ScrollView>
-                        <ImageBackground source={bg} style={styles.friendsGradient}>
-                            <View style={styles.friendsContent}>
+                    <ImageBackground source={bg} style={styles.friendsGradient}>
+                        <View style={styles.friendsContent}>
+                            <ScrollView>
                                 <View style={styles.line}>
                                     <Image style={styles.bigImage} source={{ uri: this.state.user.img }}></Image>
                                     <Text style={styles.bigText}>{this.state.user.account}</Text>
@@ -84,10 +94,10 @@ export default class Details extends React.Component {
                                     <TextInput placeholder="New message" style={styles.inputContent} value={this.state.message} onChangeText={(value) => { this.changeInput(value) }} />
                                     <Button onPress={() => this.send()} title="Send" color="#82b8ff"></Button>
                                 </View>
-                            </View>
+                            </ScrollView>
+                        </View>
 
-                        </ImageBackground>
-                    </ScrollView>
+                    </ImageBackground>
                 </View>
             );
         } else {
@@ -130,7 +140,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        paddingHorizontal: 30,
+        paddingHorizontal: 20,
         paddingVertical: 20,
     },
     bigText: {
