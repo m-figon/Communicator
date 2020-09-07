@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Button, Text, View, Image, ImageBackground, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Button, Text, View, Image, ImageBackground, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import bg from './bg.jpg';
 import moment from 'moment';
@@ -102,15 +102,18 @@ export default class Details extends React.Component {
             );
         } else {
             return (
-                <View style={styles.friends}>
-                    <LinearGradient
-                        colors={['#82b8ff', 'black']}
-                        style={styles.friendsGradient}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                    >
-                        <Text style={styles.smallText}>Loading...</Text>
-                    </LinearGradient>
+                <View style={styles.home}>
+                    <ImageBackground source={bg} style={styles.homeGradient}>
+                        <View style={styles.homeText}>
+                            <Text style={styles.whiteText}>You use friends list you have to be logged</Text>
+                            <View style={styles.line}>
+                                <Text style={styles.whiteText}>To use app, sign in</Text>
+                            </View>
+                            <View style={styles.line}>
+                                <Text style={styles.whiteText}>Don't have an account? sign up</Text>
+                            </View>
+                        </View>
+                    </ImageBackground>
                 </View>
             )
         }
@@ -210,4 +213,33 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#82b8ff'
     },
+    home: {
+        flex: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    homeGradient: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    homeText: {
+        width: 340,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        color: 'white',
+        borderWidth: 0,
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 20
+    },
+    whiteText: {
+        color: 'white'
+    },
+    blueText: {
+        color: '#82b8ff',
+        marginHorizontal: 10
+    }
 });

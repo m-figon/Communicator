@@ -1,28 +1,58 @@
 import * as React from 'react';
 import { StyleSheet, Button, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
 import bg from './bg.jpg';
-export default function HomeScreen({ navigation }) {
-    return (
-        <View style={styles.home}>
-            <ImageBackground source={bg} style={styles.homeGradient}>
-                <View style={styles.homeText}>
-                    <Text style={styles.whiteText}>Welcome to Communcator App, swipe to navigate!</Text>
-                    <View style={styles.line}>
-                        <Text style={styles.whiteText}>To use app,</Text>
-                        <TouchableOpacity onPress={() => { navigation.navigate('Login') }}>
-                            <Text style={styles.blueText}>sign in</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.line}>
-                        <Text style={styles.whiteText}>Don't have an account?</Text>
-                        <TouchableOpacity onPress={() => { navigation.navigate('Register') }}>
-                            <Text style={styles.blueText}>sign up</Text>
-                        </TouchableOpacity>
-                    </View>
+export default class Home extends React.Component {
+    constructor(props){
+        super(props)
+    }
+    render() {
+        if (this.props.logedAc) {
+            return (
+                <View style={styles.home}>
+                    <ImageBackground source={bg} style={styles.homeGradient}>
+                        <View style={styles.homeText}>
+                            <Text style={styles.whiteText}>Hello, {this.props.logedAc.account} swipe to navigate!</Text>
+                            <View style={styles.line}>
+                                <Text style={styles.whiteText}>If you don't want to use it for now</Text>
+                                <TouchableOpacity onPress={() => { this.props.changeAc(null) }}>
+                                    <Text style={styles.blueText}>sign out</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.line}>
+                                <Text style={styles.whiteText}>If you want to create an account?</Text>
+                                <TouchableOpacity onPress={() => { this.props.navigation.navigation.jumpTo('Register') }}>
+                                    <Text style={styles.blueText}>sign up</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </ImageBackground>
                 </View>
-            </ImageBackground>
-        </View>
-    );
+            );
+        } else {
+            return (
+                <View style={styles.home}>
+                    <ImageBackground source={bg} style={styles.homeGradient}>
+                        <View style={styles.homeText}>
+                            <Text style={styles.whiteText}>Welcome to Communcator App, swipe to navigate!</Text>
+                            <View style={styles.line}>
+                                <Text style={styles.whiteText}>To use app,</Text>
+                                <TouchableOpacity onPress={() => { this.props.navigation.navigation.jumpTo('Login') }}>
+                                    <Text style={styles.blueText}>sign in</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.line}>
+                                <Text style={styles.whiteText}>Don't have an account?</Text>
+                                <TouchableOpacity onPress={() => { this.props.navigation.navigation.jumpTo('Register') }}>
+                                    <Text style={styles.blueText}>sign up</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </ImageBackground>
+                </View>
+            )
+        }
+    }
+
 }
 
 const styles = StyleSheet.create({
@@ -58,6 +88,7 @@ const styles = StyleSheet.create({
     line: {
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginVertical: 4
     }
 });
