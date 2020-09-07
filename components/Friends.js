@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Button, Text, View, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, Button, Text, View, Image, ImageBackground, TouchableOpacity, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import bg from './bg.jpg';
 
@@ -7,8 +7,91 @@ export default class Friends extends React.Component {
     constructor() {
         super();
         this.state = {
-            user: null
+            users: null,
+            newFriend: ""
         }
+    }
+    changeInput(type, value) {
+        this.setState({
+            [type]: value
+        })
+    }
+    componentDidMount() {
+        fetch('https://rocky-citadel-32862.herokuapp.com/Communicator/users')
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    users: responseJson
+                })
+            })
+    }
+    search() {
+        let corretFlag1 = true;
+        let corretFlag2 = true;
+        let corretFlag3 = false;
+        if(this.state.newFriend === this.props.logedAc.account){
+            corretFlag1 = false;
+        }
+        if (!corretFlag1) {
+            alert('You can not add youself')
+        }
+        for (let elem of this.props.logedAc.friends) {
+            if (elem.account === this.state.newFriend) {
+                corretFlag2 = false;
+            }
+        }
+        if (!corretFlag2) {
+            alert('User is already in friends list')
+        }
+        if(corretFlag1 && corretFlag2) {
+            for (let item of this.state.users) {
+                if (item.account === this.state.newFriend) {
+                    corretFlag3 = true;
+                    let newFriends = this.props.logedAc.friends.slice();
+                    newFriends.push({
+                        account: item.account,
+                        img: item.img,
+                        messages: [],
+                        id: this.props.logedAc.friends.length
+                    })
+                    let newObj = {
+                        email: this.props.logedAc.email,
+                        account: this.props.logedAc.account,
+                        password: this.props.logedAc.password,
+                        img: this.props.logedAc.img,
+                        friends: newFriends,
+                        id: this.props.logedAc.id
+                    }
+                    fetch("https://rocky-citadel-32862.herokuapp.com/Communicator/users/" + this.props.logedAc.id, {
+                        method: "PUT",
+                        body: JSON.stringify(newObj),
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                        },
+                    }).then(() => {
+                        this.props.changeAc(newObj);
+                        this.setState({
+                            newFriend: ""
+                        }, () => {
+                            fetch('https://rocky-citadel-32862.herokuapp.com/Communicator/users')
+                                .then((response) => response.json())
+                                .then((responseJson) => {
+                                    this.setState({
+                                        users: responseJson
+                                    })
+                                }).then(() => {
+                                    alert('New user added');
+                                })
+                        })
+                    })
+                }
+            }
+            if (!corretFlag3) {
+                alert('User not found');
+            }
+        }
+
+
     }
     render() {
         if (this.props.logedAc) {
@@ -52,6 +135,10 @@ export default class Friends extends React.Component {
                                 }
 
                             })}
+                            <View style={styles.line}>
+                                <TextInput placeholder="Search for user" style={styles.inputContent} value={this.state.newFriend} onChangeText={(value) => { this.changeInput('newFriend', value) }} />
+                                <Button onPress={() => this.search()} title="Send" color="#82b8ff"></Button>
+                            </View>
                         </View>
 
                     </ImageBackground>
@@ -153,6 +240,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 10
+    },
+    inputContent: {
+        width: '80%',
+        marginRight: 10,
+        color: 'white',
+        borderBottomWidth: 1,
+        borderBottomColor: '#82b8ff'
     },
     bigImage: {
         width: 60,
