@@ -3,6 +3,8 @@ import { StyleSheet, Button, Text, View, Image, ImageBackground, TextInput, Scro
 import { LinearGradient } from 'expo-linear-gradient';
 import bg from './bg.jpg';
 import moment from 'moment';
+import EmojiSelector from 'react-native-emoji-selector'
+
 export default class Details extends React.Component {
     constructor() {
         super();
@@ -30,6 +32,11 @@ export default class Details extends React.Component {
     changeInput(value) {
         this.setState({
             message: value
+        })
+    }
+    addToInput(value){
+        this.setState({
+            message: this.state.message+" "+value
         })
     }
     send() {
@@ -94,6 +101,8 @@ export default class Details extends React.Component {
                                     <TextInput placeholder="New message" style={styles.inputContent} value={this.state.message} onChangeText={(value) => { this.changeInput(value) }} />
                                     <Button onPress={() => this.send()} title="Send" color="#82b8ff"></Button>
                                 </View>
+                                <EmojiSelector showSearchBar={false} onEmojiSelected={emoji => this.addToInput(emoji)} />
+
                             </ScrollView>
                         </View>
 
