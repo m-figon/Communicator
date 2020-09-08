@@ -8,7 +8,8 @@ export default class Friends extends React.Component {
         super();
         this.state = {
             users: null,
-            newFriend: ""
+            newFriend: "",
+            filter: ""
         }
     }
     changeInput(type, value) {
@@ -29,7 +30,8 @@ export default class Friends extends React.Component {
         let corretFlag1 = true;
         let corretFlag2 = true;
         let corretFlag3 = false;
-        if(this.state.newFriend === this.props.logedAc.account){
+        let newUser;
+        if (this.state.newFriend === this.props.logedAc.account) {
             corretFlag1 = false;
         }
         if (!corretFlag1) {
@@ -43,7 +45,7 @@ export default class Friends extends React.Component {
         if (!corretFlag2) {
             alert('User is already in friends list')
         }
-        if(corretFlag1 && corretFlag2) {
+        if (corretFlag1 && corretFlag2) {
             for (let item of this.state.users) {
                 if (item.account === this.state.newFriend) {
                     corretFlag3 = true;
@@ -70,8 +72,35 @@ export default class Friends extends React.Component {
                         },
                     }).then(() => {
                         this.props.changeAc(newObj);
+                        for (let elem of this.state.users) {
+                            if (elem.account === this.state.newFriend) {
+                                let newUser = elem;
+                                let newFriends2 = newUser.friends.slice();
+                                newFriends2.push({
+                                    account: this.props.logedAc.account,
+                                    img: this.props.logedAc.img,
+                                    messages: [],
+                                    id: newUser.friends.length
+                                })
+                                let newObj2 = {
+                                    email: newUser.email,
+                                    account: newUser.account,
+                                    password: newUser.password,
+                                    img: newUser.img,
+                                    friends: newFriends2,
+                                    id: newUser.id
+                                }
+                                fetch("https://rocky-citadel-32862.herokuapp.com/Communicator/users/" + newUser.id, {
+                                    method: "PUT",
+                                    body: JSON.stringify(newObj2),
+                                    headers: {
+                                        "Content-type": "application/json; charset=UTF-8",
+                                    },
+                                })
+                            }
+                        }
                         this.setState({
-                            newFriend: ""
+                            newFriend: ""                            
                         }, () => {
                             fetch('https://rocky-citadel-32862.herokuapp.com/Communicator/users')
                                 .then((response) => response.json())
@@ -103,8 +132,9 @@ export default class Friends extends React.Component {
                                 <Image style={styles.bigImage} source={{ uri: this.props.logedAc.img }}></Image>
                                 <Text style={styles.bigText}>{this.props.logedAc.account} friends list</Text>
                             </View>
+                            <TextInput placeholder="Search for user" style={styles.filterInputContent} value={this.state.filter} onChangeText={(value) => { this.changeInput('filter', value) }} />
                             {this.props.logedAc.friends.map((item) => {
-                                if (item.messages.length === 0) {
+                                if (item.messages.length === 0 && item.account.toLowerCase().includes(this.state.filter.toLowerCase())) {
                                     return (
                                         <TouchableOpacity onPress={() => this.props.navigation.navigation.push('Details', { name: item })}>
                                             <View style={styles.friendsLine}>
@@ -118,7 +148,7 @@ export default class Friends extends React.Component {
                                             </View>
                                         </TouchableOpacity>
                                     )
-                                } else {
+                                } else if (item.messages.length > 0 && item.account.toLowerCase().includes(this.state.filter.toLowerCase())) {
                                     return (
                                         <TouchableOpacity onPress={() => this.props.navigation.navigation.push('Details', { name: item })}>
                                             <View style={styles.friendsLine}>
@@ -136,8 +166,8 @@ export default class Friends extends React.Component {
 
                             })}
                             <View style={styles.line}>
-                                <TextInput placeholder="Search for user" style={styles.inputContent} value={this.state.newFriend} onChangeText={(value) => { this.changeInput('newFriend', value) }} />
-                                <Button onPress={() => this.search()} title="Send" color="#82b8ff"></Button>
+                                <TextInput placeholder="Enter user to add" style={styles.inputContent} value={this.state.newFriend} onChangeText={(value) => { this.changeInput('newFriend', value) }} />
+                                <Button onPress={() => this.search()} title="Add" color="#82b8ff"></Button>
                             </View>
                         </View>
 
@@ -247,6 +277,13 @@ const styles = StyleSheet.create({
         color: 'white',
         borderBottomWidth: 1,
         borderBottomColor: '#82b8ff'
+    },
+    filterInputContent: {
+        width: '100%',
+        color: 'white',
+        borderBottomWidth: 1,
+        borderBottomColor: '#82b8ff',
+        marginVertical: 10
     },
     bigImage: {
         width: 60,

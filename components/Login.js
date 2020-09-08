@@ -31,30 +31,38 @@ export default class Login extends Component {
         // console.log(this.state.users);
         //console.log(this.state.account);
         //console.log(this.state.password);
-        if (this.state.users) {
-            let correctFlag = false;
-            for (let item of this.state.users) {
-                if (this.state.account === item.account && this.state.password === item.password) {
-                    correctFlag = true;
-                    this.setState({
-                        account: "",
-                        password: ""
-                    }, () => {
-                        this.props.changeAc(item);
-                        Alert.alert('You loged', 'Correct user data', [
-                            { text: 'Understood', onPress: () => this.props.navigation.navigation.jumpTo('Home') }
+        fetch('https://rocky-citadel-32862.herokuapp.com/Communicator/users')
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    users: responseJson
+                })
+            }).then(() => {
+                console.log(this.state.users);
+                if (this.state.users) {
+                    let correctFlag = false;
+                    for (let item of this.state.users) {
+                        if (this.state.account === item.account && this.state.password === item.password) {
+                            correctFlag = true;
+                            this.setState({
+                                account: "",
+                                password: ""
+                            }, () => {
+                                this.props.changeAc(item);
+                                Alert.alert('You loged', 'Correct user data', [
+                                    { text: 'Understood', onPress: () => this.props.navigation.navigation.jumpTo('Home') }
+                                ])
+                            })
+
+                        }
+                    }
+                    if (!correctFlag) {
+                        Alert.alert('Ooops!', 'Invalid user data', [
+                            { text: 'Understood', onPress: () => console.log('alert closed') }
                         ])
-                    })
-
+                    }
                 }
-            }
-            if (!correctFlag) {
-                Alert.alert('Ooops!', 'Invalid user data', [
-                    { text: 'Understood', onPress: () => console.log('alert closed') }
-                ])
-            }
-        }
-
+            })
     }
     logout() {
         this.props.changeAc(null);

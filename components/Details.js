@@ -10,6 +10,7 @@ export default class Details extends React.Component {
         super();
         this.state = {
             user: null,
+            users: null,
             message: ""
         }
     }
@@ -19,24 +20,24 @@ export default class Details extends React.Component {
         this.setState({
             user: this.props.navigation.route.params.name
         })
-        setInterval(()=>{
+        setInterval(() => {
             previousUser = currentUser;
             currentUser = this.props.navigation.route.params.name;
-            if(previousUser!==currentUser){
+            if (previousUser !== currentUser) {
                 this.setState({
                     user: this.props.navigation.route.params.name
                 })
             }
-        },100)
+        }, 100)
     }
     changeInput(value) {
         this.setState({
             message: value
         })
     }
-    addToInput(value){
+    addToInput(value) {
         this.setState({
-            message: this.state.message+" "+value
+            message: this.state.message + " " + value
         })
     }
     send() {
@@ -61,12 +62,55 @@ export default class Details extends React.Component {
                 "Content-type": "application/json; charset=UTF-8",
             },
         }).then(() => {
-            this.props.changeAc(newObj);
-            this.setState({
-                message: ""
-            }, () => {
-                alert('message sent!');
-            })
+            fetch('https://rocky-citadel-32862.herokuapp.com/Communicator/users')
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    this.setState({
+                        users: responseJson
+                    }, () => {
+                        console.log(this.state.users);
+                        for (let item of this.state.users) {
+                            if (item.account === this.state.user.account) {
+                                let tmpAcFriends = item.friends.slice();
+                                for (let elem of tmpAcFriends) {
+                                    if (elem.account === this.props.logedAc.account) {
+                                        tmpAcFriends[elem.id].messages.push({
+                                            account: this.props.logedAc.account,
+                                            content: this.state.message,
+                                            date: moment().format('L')
+                                        })
+                                        let newObj2 = {
+                                            email: item.email,
+                                            account: item.account,
+                                            password: item.password,
+                                            img: item.img,
+                                            friends: tmpAcFriends,
+                                            id: item.id
+                                        }
+                                        fetch("https://rocky-citadel-32862.herokuapp.com/Communicator/users/" + item.id, {
+                                            method: "PUT",
+                                            body: JSON.stringify(newObj2),
+                                            headers: {
+                                                "Content-type": "application/json; charset=UTF-8",
+                                            },
+                                        }).then(() => {
+                                            this.props.changeAc(newObj);
+                                            this.setState({
+                                                message: ""
+                                            }, () => {
+                                                alert('message sent!');
+                                            })
+                                        })
+
+                                    }
+                                }
+
+                            }
+                        }
+
+                    })
+                })
+
         })
 
     }
@@ -101,8 +145,7 @@ export default class Details extends React.Component {
                                     <TextInput placeholder="New message" style={styles.inputContent} value={this.state.message} onChangeText={(value) => { this.changeInput(value) }} />
                                     <Button onPress={() => this.send()} title="Send" color="#82b8ff"></Button>
                                 </View>
-                                <EmojiSelector showSearchBar={false} onEmojiSelected={emoji => this.addToInput(emoji)} />
-
+                                {/* <EmojiSelector showSearchBar={false} onEmojiSelected={emoji => this.addToInput(emoji)} /> */}
                             </ScrollView>
                         </View>
 
