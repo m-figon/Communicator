@@ -123,6 +123,17 @@ export default class Friends extends React.Component {
 
     }
     render() {
+        const InputVisiblity = () =>{
+            if(this.props.logedAc.friends.length===0){
+                return(
+                    null
+                )
+            }else{
+                return(
+                    <TextInput placeholder="Search for user" style={styles.filterInputContent} value={this.state.filter} onChangeText={(value) => { this.changeInput('filter', value) }} />
+                )
+            }
+        }
         if (this.props.logedAc) {
             return (
                 <View style={styles.friends}>
@@ -132,7 +143,7 @@ export default class Friends extends React.Component {
                                 <Image style={styles.bigImage} source={{ uri: this.props.logedAc.img }}></Image>
                                 <Text style={styles.bigText}>{this.props.logedAc.account} friends list</Text>
                             </View>
-                            <TextInput placeholder="Search for user" style={styles.filterInputContent} value={this.state.filter} onChangeText={(value) => { this.changeInput('filter', value) }} />
+                            <InputVisiblity/>
                             {this.props.logedAc.friends.map((item) => {
                                 if (item.messages.length === 0 && item.account.toLowerCase().includes(this.state.filter.toLowerCase())) {
                                     return (
