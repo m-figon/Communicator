@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, Button, Text, View, Image, ImageBackground, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Button, Text, View, Image, ImageBackground, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import bg from './bg.jpg';
+import { AntDesign } from '@expo/vector-icons';
 
 export default class Friends extends React.Component {
     constructor() {
@@ -25,6 +26,72 @@ export default class Friends extends React.Component {
                     users: responseJson
                 })
             })
+    }
+    deletePopUp(item) {
+        Alert.alert(
+            "Deleting user",
+            "Are you sure that you want to remove a user?",
+            [
+                {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                },
+                { text: "OK", onPress: () => this.deleteUser(item) }
+            ],
+            { cancelable: false }
+        );
+    }
+    deleteUser(item) {
+        console.log(item);
+        let tmpFriends = this.props.logedAc.friends.slice();
+        for (let [key, friend] of tmpFriends.entries()) {
+            if (item.account === friend.account) {
+                tmpFriends.splice(key, 1);
+                let newObj = {
+                    email: this.props.logedAc.email,
+                    account: this.props.logedAc.account,
+                    password: this.props.logedAc.password,
+                    img: this.props.logedAc.img,
+                    friends: tmpFriends,
+                    id: this.props.logedAc.id
+                }
+                fetch("https://rocky-citadel-32862.herokuapp.com/Communicator/users/" + this.props.logedAc.id, {
+                    method: "PUT",
+                    body: JSON.stringify(newObj),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8",
+                    },
+                }).then(() => {
+                    this.props.changeAc(newObj);
+                    for (let elem of this.state.users) {
+                        if (elem.account === item.account) {
+                            let elemFriends = elem.friends.slice();
+                            for (let [index, friend] of elemFriends.entries()) {
+                                if (friend.account === this.props.logedAc.account) {
+                                    elemFriends.splice(index, 1);
+                                    console.log(elemFriends);
+                                    fetch("https://rocky-citadel-32862.herokuapp.com/Communicator/users/" + elem.id, {
+                                        method: "PUT",
+                                        body: JSON.stringify({
+                                            email: elem.email,
+                                            account: elem.account,
+                                            password: elem.password,
+                                            img: elem.img,
+                                            friends: elemFriends,
+                                            id: elem.id
+                                        }),
+                                        headers: {
+                                            "Content-type": "application/json; charset=UTF-8",
+                                        },
+                                    })
+                                }
+                            }
+                        }
+                    }
+                })
+            }
+        }
     }
     search() {
         let corretFlag1 = true;
@@ -100,7 +167,7 @@ export default class Friends extends React.Component {
                             }
                         }
                         this.setState({
-                            newFriend: ""                            
+                            newFriend: ""
                         }, () => {
                             fetch('https://rocky-citadel-32862.herokuapp.com/Communicator/users')
                                 .then((response) => response.json())
@@ -123,13 +190,13 @@ export default class Friends extends React.Component {
 
     }
     render() {
-        const InputVisiblity = () =>{
-            if(this.props.logedAc.friends.length===0){
-                return(
+        const InputVisiblity = () => {
+            if (this.props.logedAc.friends.length === 0) {
+                return (
                     null
                 )
-            }else{
-                return(
+            } else {
+                return (
                     <TextInput placeholder="Search for user" style={styles.filterInputContent} value={this.state.filter} onChangeText={(value) => { this.changeInput('filter', value) }} />
                 )
             }
@@ -143,21 +210,24 @@ export default class Friends extends React.Component {
                                 <Image style={styles.bigImage} source={{ uri: this.props.logedAc.img }}></Image>
                                 <Text style={styles.bigText}>{this.props.logedAc.account} friends list</Text>
                             </View>
-                            <InputVisiblity/>
+                            <InputVisiblity />
                             {this.props.logedAc.friends.map((item) => {
                                 if (item.messages.length === 0 && item.account.toLowerCase().includes(this.state.filter.toLowerCase())) {
                                     return (
-                                        <TouchableOpacity onPress={() => this.props.navigation.navigation.push('Details', { name: item })}>
-                                            <View style={styles.friendsLine}>
-                                                <View style={styles.left}>
-                                                    <Image style={styles.smallImage} source={{ uri: item.img }}></Image>
-                                                    <Text style={styles.smallText}>{item.account}</Text>
-                                                </View>
-                                                <View style={styles.right}>
-                                                    <Text style={styles.smallText2}>No Messages</Text>
-                                                </View>
+                                        <View style={styles.friendsLine}>
+                                            <TouchableOpacity style={styles.left} onPress={() => this.props.navigation.navigation.push('Details', { name: item })}>
+                                                <Image style={styles.smallImage} source={{ uri: item.img }}></Image>
+                                                <Text style={styles.smallText}>{item.account}</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={styles.middle} onPress={() => this.props.navigation.navigation.push('Details', { name: item })}>
+                                                <Text style={styles.smallText2}>No Messages</Text>
+                                            </TouchableOpacity>
+                                            <View style={styles.right}>
+                                                <TouchableOpacity onPress={() => { this.deletePopUp(item) }}>
+                                                    <AntDesign name="deleteuser" size={17} color="white" />
+                                                </TouchableOpacity>
                                             </View>
-                                        </TouchableOpacity>
+                                        </View>
                                     )
                                 } else if (item.messages.length > 0 && item.account.toLowerCase().includes(this.state.filter.toLowerCase())) {
                                     return (
@@ -167,9 +237,12 @@ export default class Friends extends React.Component {
                                                     <Image style={styles.smallImage} source={{ uri: item.img }}></Image>
                                                     <Text style={styles.smallText}>{item.account}</Text>
                                                 </View>
-                                                <View style={styles.right}>
-                                                    <Text style={styles.smallText2}>Last message {item.messages[item.messages.length - 1].date}</Text>
+                                                <View style={styles.middle}>
+                                                    <Text style={styles.smallText2}>No Messages</Text>
                                                 </View>
+                                                <TouchableOpacity onPress={() => { this.deletePopUp(item) }}>
+                                                    <AntDesign name="deleteuser" size={17} color="white" />
+                                                </TouchableOpacity>
                                             </View>
                                         </TouchableOpacity>
                                     )
@@ -241,20 +314,30 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     left: {
-        width: '50%',
+        width: '45%',
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start'
+        justifyContent: 'flex-start',
+    },
+    middle: {
+        width: '45%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        paddingHorizontal: 10
     },
     right: {
-        width: '50%',
+        width: '10%',
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        paddingRight: 10
     },
     smallText2: {
         fontSize: 15,
@@ -264,6 +347,11 @@ const styles = StyleSheet.create({
     smallImage: {
         width: 50,
         height: 50,
+    },
+    friendsOpacity: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     friendsLine: {
         display: 'flex',

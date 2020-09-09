@@ -124,7 +124,6 @@ export default class Details extends React.Component {
                                 <View style={styles.line}>
                                     <Image style={styles.bigImage} source={{ uri: this.state.user.img }}></Image>
                                     <Text style={styles.bigText}>{this.state.user.account}</Text>
-
                                 </View>
                                 {this.state.user.messages.map((item) => {
                                     return (
