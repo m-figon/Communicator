@@ -3,7 +3,7 @@ import { StyleSheet, Button, Text, View, Image, ImageBackground, TextInput, Scro
 import { LinearGradient } from 'expo-linear-gradient';
 import bg from './bg.jpg';
 import moment from 'moment';
-import EmojiSelector from 'react-native-emoji-selector'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default class Details extends React.Component {
     constructor() {
@@ -144,7 +144,29 @@ export default class Details extends React.Component {
                                     <TextInput placeholder="New message" style={styles.inputContent} value={this.state.message} onChangeText={(value) => { this.changeInput(value) }} />
                                     <Button onPress={() => this.send()} title="Send" color="#82b8ff"></Button>
                                 </View>
-                                {/* <EmojiSelector showSearchBar={false} onEmojiSelected={emoji => this.addToInput(emoji)} /> */}
+                                <View style={styles.emojiBoard}>
+                                    <TouchableOpacity onPress={() => { this.addToInput('☺') }}>
+                                        <MaterialCommunityIcons name="emoticon-happy-outline" size={24} color="white" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => { this.addToInput('😄') }}>
+                                        <MaterialCommunityIcons name="emoticon-outline" size={24} color="white" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => { this.addToInput('😚') }}>
+                                        <MaterialCommunityIcons name="emoticon-kiss-outline" size={24} color="white" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => { this.addToInput('😐') }}>
+                                        <MaterialCommunityIcons name="emoticon-neutral-outline" size={24} color="white" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => { this.addToInput('😢') }}>
+                                        <MaterialCommunityIcons name="emoticon-sad-outline" size={24} color="white" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => { this.addToInput('😋') }}>
+                                        <MaterialCommunityIcons name="emoticon-tongue-outline" size={24} color="white" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => { this.addToInput('😉') }}>
+                                        <MaterialCommunityIcons name="emoticon-wink-outline" size={24} color="white" />
+                                    </TouchableOpacity>
+                                </View>
                             </ScrollView>
                         </View>
 
@@ -292,5 +314,17 @@ const styles = StyleSheet.create({
     blueText: {
         color: '#82b8ff',
         marginHorizontal: 10
+    },
+    emojiBoard: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: "space-evenly",
+        height: 40,
+        width: '100%',
+        borderColor: '#82b8ff',
+        marginVertical: 5,
+        borderRadius: 10,
+        borderWidth: 1
     }
 });
