@@ -110,7 +110,7 @@ export default class Friends extends React.Component {
             }
         }
         if (!corretFlag2) {
-            alert('User is already in friends list')
+            alert('User is already in friends list or you sent the invitation already')
         }
         if (corretFlag1 && corretFlag2) {
             for (let item of this.state.users) {
@@ -120,6 +120,7 @@ export default class Friends extends React.Component {
                     newFriends.push({
                         account: item.account,
                         img: item.img,
+                        confirmed: -1,
                         messages: [],
                         id: this.props.logedAc.friends.length
                     })
@@ -146,6 +147,7 @@ export default class Friends extends React.Component {
                                 newFriends2.push({
                                     account: this.props.logedAc.account,
                                     img: this.props.logedAc.img,
+                                    confirmed: 0,
                                     messages: [],
                                     id: newUser.friends.length
                                 })
@@ -175,8 +177,6 @@ export default class Friends extends React.Component {
                                     this.setState({
                                         users: responseJson
                                     })
-                                }).then(() => {
-                                    alert('New user added');
                                 })
                         })
                     })
@@ -188,6 +188,56 @@ export default class Friends extends React.Component {
         }
 
 
+    }
+    accept(item) {
+        let tmpFriends = this.props.logedAc.friends.slice();
+        for (let [key, friend] of tmpFriends.entries()) {
+            if (friend.account === item.account) {
+                tmpFriends[key].confirmed = 1;
+                let newObj = {
+                    email: this.props.logedAc.email,
+                    account: this.props.logedAc.account,
+                    password: this.props.logedAc.password,
+                    img: this.props.logedAc.img,
+                    friends: tmpFriends,
+                    id: this.props.logedAc.id
+                }
+                fetch("https://rocky-citadel-32862.herokuapp.com/Communicator/users/" + this.props.logedAc.id, {
+                    method: "PUT",
+                    body: JSON.stringify(newObj),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8",
+                    },
+                }).then(() => {
+                    this.props.changeAc(newObj);
+                    for (let user of this.state.users) {
+                        if (user.account === item.account) {
+                            let tmpFriends2 = user.friends.slice();
+                            for (let [key2, friend] of tmpFriends2.entries()) {
+                                if (friend.account === this.props.logedAc.account) {
+                                    tmpFriends2[key2].confirmed = 1;
+                                    let newObj2 = {
+                                        email: user.email,
+                                        account: user.account,
+                                        password: user.password,
+                                        img: user.img,
+                                        friends: tmpFriends2,
+                                        id: user.id
+                                    }
+                                    fetch("https://rocky-citadel-32862.herokuapp.com/Communicator/users/" + user.id, {
+                                        method: "PUT",
+                                        body: JSON.stringify(newObj2),
+                                        headers: {
+                                            "Content-type": "application/json; charset=UTF-8",
+                                        },
+                                    })
+                                }
+                            }
+                        }
+                    }
+                })
+            }
+        }
     }
     render() {
         const InputVisiblity = () => {
@@ -212,7 +262,7 @@ export default class Friends extends React.Component {
                             </View>
                             <InputVisiblity />
                             {this.props.logedAc.friends.map((item) => {
-                                if (item.messages.length === 0 && item.account.toLowerCase().includes(this.state.filter.toLowerCase())) {
+                                if (item.confirmed === 1 && item.messages.length === 0 && item.account.toLowerCase().includes(this.state.filter.toLowerCase())) {
                                     return (
                                         <View style={styles.friendsLine}>
                                             <TouchableOpacity style={styles.left} onPress={() => this.props.navigation.navigation.push('Details', { name: item })}>
@@ -229,7 +279,7 @@ export default class Friends extends React.Component {
                                             </View>
                                         </View>
                                     )
-                                } else if (item.messages.length > 0 && item.account.toLowerCase().includes(this.state.filter.toLowerCase())) {
+                                } else if (item.confirmed === 1 && item.messages.length > 0 && item.account.toLowerCase().includes(this.state.filter.toLowerCase())) {
                                     return (
                                         <TouchableOpacity onPress={() => this.props.navigation.navigation.push('Details', { name: item })}>
                                             <View style={styles.friendsLine}>
@@ -238,13 +288,46 @@ export default class Friends extends React.Component {
                                                     <Text style={styles.smallText}>{item.account}</Text>
                                                 </View>
                                                 <View style={styles.middle}>
-                                                    <Text style={styles.smallText2}>No Messages</Text>
+                                                    <Text style={styles.smallText2}>{item.messages[item.messages.length-1].date}</Text>
                                                 </View>
-                                                <TouchableOpacity onPress={() => { this.deletePopUp(item) }}>
+                                                <TouchableOpacity style={styles.right} onPress={() => { this.deletePopUp(item) }}>
                                                     <AntDesign name="deleteuser" size={17} color="white" />
                                                 </TouchableOpacity>
                                             </View>
                                         </TouchableOpacity>
+                                    )
+                                } else if (item.confirmed === 0) {
+                                    return (
+                                        <View style={styles.friendsLine}>
+                                            <View style={styles.left}>
+                                                <Image style={styles.smallImage} source={{ uri: item.img }}></Image>
+                                                <Text style={styles.smallText}>{item.account}</Text>
+                                            </View>
+                                            <View style={styles.middle}>
+                                                <Text style={styles.smallText2}>{item.account} sent you an invitation</Text>
+                                            </View>
+                                            <View style={styles.right}>
+                                                <TouchableOpacity style={styles.marginSet} onPress={() => { this.accept(item) }}>
+                                                    <AntDesign name="check" size={24} color="green" />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={styles.marginSet} onPress={() => { this.deletePopUp(item) }}>
+                                                    <AntDesign name="close" size={24} color="red" />
+                                                </TouchableOpacity>
+                                            </View>
+
+                                        </View>
+                                    )
+                                } else if (item.confirmed === -1) {
+                                    return (
+                                        <View style={styles.friendsLine}>
+                                            <View style={styles.left}>
+                                                <Image style={styles.smallImage} source={{ uri: item.img }}></Image>
+                                                <Text style={styles.smallText}>{item.account}</Text>
+                                            </View>
+                                            <View style={styles.right2}>
+                                                <Text style={styles.smallText2}>Invitation Sent</Text>
+                                            </View>
+                                        </View>
                                     )
                                 }
 
@@ -339,6 +422,15 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         paddingRight: 10
     },
+    right2: {
+        width: '55%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingRight: 10
+    },
     smallText2: {
         fontSize: 15,
         color: 'white',
@@ -420,5 +512,8 @@ const styles = StyleSheet.create({
     blueText: {
         color: '#82b8ff',
         marginHorizontal: 10
+    },
+    marginSet: {
+        marginHorizontal: 1
     }
 });

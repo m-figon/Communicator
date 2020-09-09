@@ -97,8 +97,6 @@ export default class Details extends React.Component {
                                             this.props.changeAc(newObj);
                                             this.setState({
                                                 message: ""
-                                            }, () => {
-                                                alert('message sent!');
                                             })
                                         })
 
