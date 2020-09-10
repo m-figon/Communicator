@@ -18,6 +18,7 @@ export default class Register extends Component {
             accountShow: false,
             passwordShow: false,
             password2Show: false,
+            imgShow: false,
             avatar: null
         }
     }
@@ -76,6 +77,14 @@ export default class Register extends Component {
             this.settingState('password2Show', true);
             registerFlag = false;
         }
+        if (
+            this.state.img !== ''
+        ) {
+            this.settingState('imgShow', false);
+        } else {
+            this.settingState('imgShow', true);
+            registerFlag = false;
+        }
         if (registerFlag) {
             fetch("https://rocky-citadel-32862.herokuapp.com/Communicator/users", {
                 method: "POST",
@@ -100,7 +109,9 @@ export default class Register extends Component {
                             emailShow: false,
                             accountShow: false,
                             passwordShow: false,
-                            password2Show: false
+                            password2Show: false,
+                            img: "",
+                            avatar: null
                         })
                     }
                 ])
@@ -109,7 +120,7 @@ export default class Register extends Component {
 
         }
     }
-    selectImg(url, num){
+    selectImg(url, num) {
         this.setState({
             img: url,
             avatar: num
@@ -150,28 +161,33 @@ export default class Register extends Component {
                             { display: 'flex' }
                             : { display: 'none' }]} >Password must be correct and same as password confirmation</Text>
                     <View style={styles.line}>
-                        <TouchableOpacity onPress={()=>this.selectImg('https://robohash.org/77set=set6',1)}>
-                        <Image style={[
-                        styles.avatarImg,
-                        this.state.avatar===1 ?
-                            { borderWidth: 2 }
-                            : { borderWidth: 0 }]} source={{ uri: 'https://robohash.org/77set=set6' }}></Image>
+                        <TouchableOpacity onPress={() => this.selectImg('https://robohash.org/77set=set6', 1)}>
+                            <Image style={[
+                                styles.avatarImg,
+                                this.state.avatar === 1 ?
+                                    { borderWidth: 2 }
+                                    : { borderWidth: 0 }]} source={{ uri: 'https://robohash.org/77set=set6' }}></Image>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={(e)=>this.selectImg('https://robohash.org/77set=set6',2)}>
-                        <Image style={[
-                        styles.avatarImg,
-                        this.state.avatar===2 ?
-                            { borderWidth: 2 }
-                            : { borderWidth: 0 }]} source={{ uri: 'https://robohash.org/77set=set10' }}></Image>
+                        <TouchableOpacity onPress={(e) => this.selectImg('https://robohash.org/77set=set10', 2)}>
+                            <Image style={[
+                                styles.avatarImg,
+                                this.state.avatar === 2 ?
+                                    { borderWidth: 2 }
+                                    : { borderWidth: 0 }]} source={{ uri: 'https://robohash.org/77set=set10' }}></Image>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={(e)=>this.selectImg('https://robohash.org/77set=set6',3)}>
-                        <Image style={[
-                        styles.avatarImg,
-                        this.state.avatar===3 ?
-                            { borderWidth: 2 }
-                            : { borderWidth: 0 }]} source={{ uri: 'https://robohash.org/77set=set20' }}></Image>
+                        <TouchableOpacity onPress={(e) => this.selectImg('https://robohash.org/77set=set20', 3)}>
+                            <Image style={[
+                                styles.avatarImg,
+                                this.state.avatar === 3 ?
+                                    { borderWidth: 2 }
+                                    : { borderWidth: 0 }]} source={{ uri: 'https://robohash.org/77set=set20' }}></Image>
                         </TouchableOpacity>
                     </View>
+                    <Text style={[
+                        styles.warning,
+                        this.state.imgShow ?
+                            { display: 'flex' }
+                            : { display: 'none' }]} >Please choose an avatar</Text>
                     <Button onPress={() => this.registerFunc()} title="Register" color="#82b8ff"></Button>
                 </LinearGradient>
             </ImageBackground>
@@ -198,7 +214,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start'
     },
     inputContent: {
-        marginVertical: 12,
+        marginVertical: 7,
         borderBottomWidth: 1,
         width: '100%',
         color: 'white',
@@ -206,7 +222,7 @@ const styles = StyleSheet.create({
     },
     warning: {
         color: 'red',
-        marginBottom: 7
+        marginBottom: 9
     },
     line: {
         display: 'flex',

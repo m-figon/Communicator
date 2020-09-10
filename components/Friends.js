@@ -261,10 +261,10 @@ export default class Friends extends React.Component {
                                 <Text style={styles.bigText}>{this.props.logedAc.account} friends list</Text>
                             </View>
                             <InputVisiblity />
-                            {this.props.logedAc.friends.map((item) => {
+                            {this.props.logedAc.friends.map((item,index) => {
                                 if (item.confirmed === 1 && item.messages.length === 0 && item.account.toLowerCase().includes(this.state.filter.toLowerCase())) {
                                     return (
-                                        <View style={styles.friendsLine}>
+                                        <View key={index} style={styles.friendsLine}>
                                             <TouchableOpacity style={styles.left} onPress={() => this.props.navigation.navigation.push('Details', { name: item })}>
                                                 <Image style={styles.smallImage} source={{ uri: item.img }}></Image>
                                                 <Text style={styles.smallText}>{item.account}</Text>
